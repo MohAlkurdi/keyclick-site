@@ -3,3 +3,7 @@ dist/
 .astro/
 public/sounds/
 src/data/
+.DS_Store
+.impeccable/review/
+.impeccable/questions/
+.impeccable/*payload*.json

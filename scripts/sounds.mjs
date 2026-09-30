@@ -1,9 +1,9 @@
-// Packs each switch in ../Sounds into one mono WAV for the browser (public/sounds/<slug>.wav)
+// Packs each switch in the app repo's Sounds/ (a sibling checkout at ../keyclick) into one mono WAV for the browser (public/sounds/<slug>.wav)
 // and writes the offsets to src/data/packs.json.
 import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
-const SOURCE = "../Sounds";
+const SOURCE = "../keyclick/Sounds";
 const RATE = 48_000;
 const TYPES = { "MX Black": "Linear", "MX Red": "Linear", "MX Brown": "Tactile", "MX Blue": "Clicky", Topre: "Electro-capacitive" };
 const ORDER = ["MX Brown", "MX Black", "MX Red", "MX Blue", "Topre"];

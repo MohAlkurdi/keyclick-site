@@ -3,7 +3,6 @@ name: Site
 on:
   push:
     branches: [main]
-    paths: [site/**, Sounds/**, .github/workflows/site.yml]
   workflow_dispatch:
 
 permissions:
@@ -26,6 +25,12 @@ jobs:
         working-directory: site
     steps:
       - uses: actions/checkout@v4
+        with:
+          path: site
+      - uses: actions/checkout@v4
+        with:
+          repository: MohAlkurdi/keyclick
+          path: keyclick
       - uses: actions/setup-node@v4
         with:
           node-version: 22

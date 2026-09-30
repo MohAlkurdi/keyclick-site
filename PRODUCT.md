@@ -8,7 +8,7 @@ web
 
 ## Stack
 
-Astro (user's choice), static output deployed to GitHub Pages. The site lives in `site/` inside the app repo.
+Astro (user's choice), static output deployed to GitHub Pages. The site lives in its own repo (MohAlkurdi/keyclick-site); the sounds come from the app repo (MohAlkurdi/keyclick) at build time.
 
 ## Users
 

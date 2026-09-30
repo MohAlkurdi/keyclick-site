@@ -1,11 +1,11 @@
 ---
 version: 1
 slug: "site-src-pages-index-astro"
-primary_target: "site/src/pages/index.astro"
+primary_target: "src/pages/index.astro"
 related_targets: []
 ---
 
-# Surface: KeyClick landing page (site/src/pages/index.astro)
+# Surface: KeyClick landing page (src/pages/index.astro)
 
 Mode: Persuade. Audience: MacBook typers who want a mechanical keyboard feel. Action: download the free app from GitHub Releases. Proof: the visitor types on the page and hears the real recordings of each key. Constraints: no invented claims, users, or numbers; plain English for non-native readers; tip link hidden until a tip URL exists.
 
