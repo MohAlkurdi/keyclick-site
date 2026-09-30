@@ -114,6 +114,7 @@ const waveRows = [...mainRows, bottomRow];
         </div>
 
         <div class="stage">
+          <input class="capture" id="capture" aria-label="Type here to hear KeyClick" autocomplete="off" autocapitalize="off" spellcheck="false" />
           <p class="echo" aria-hidden="true"><span id="echo"></span><span class="caret"></span></p>
           <div class="kb-frame">
             <div class="kb" id="kb" data-mech="false" role="img" aria-label="A MacBook keyboard. Press any key, or tap one, to hear KeyClick.">
@@ -473,15 +474,27 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
       }
       // macOS browsers send caps lock as a toggle: keydown when it turns on, keyup when it turns off.
       const capsToggles = /Mac|iPhone|iPad/.test(navigator.platform);
-      const typing = (e: Event) => e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
+      // Vim-style extensions (Vimium, Surfingkeys) swallow keys unless a text field has focus, so the page types
+      // into this hidden field rather than the body.
+      const capture = $<HTMLInputElement>("capture");
+      const typing = (e: Event) =>
+        e.target !== capture && (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement);
       addEventListener("keydown", (e) => {
-        if (e.target === document.body && pageKeys.has(e.code) && !e.metaKey && !e.ctrlKey) e.preventDefault();
+        const onPage = e.target === document.body || e.target === capture;
+        if (onPage && !e.metaKey && !e.ctrlKey && (pageKeys.has(e.code) || e.key.length === 1)) e.preventDefault();
         if ((e.metaKey || e.ctrlKey) && e.code === "KeyA" && !typing(e)) e.preventDefault();
         if (e.repeat) return;
         if (e.code === "CapsLock") return tap(e.code);
         press(e.code);
         if (!e.metaKey && !e.ctrlKey && !typing(e)) echoKey(e.key);
       });
+      // A mouse click anywhere that is not a control or a text selection hands typing back to the page.
+      addEventListener("pointerup", (e) => {
+        if (e.pointerType !== "mouse" || !getSelection()!.isCollapsed) return;
+        if ((e.target as Element).closest("input, select, textarea, #test-box, .prompt")) return;
+        capture.focus({ preventScroll: true });
+      });
+      if (matchMedia("(pointer: fine)").matches) capture.focus({ preventScroll: true });
       addEventListener("keyup", (e) => {
         if (e.code === "CapsLock") return capsToggles && tap(e.code);
         release(e.code);
@@ -1002,6 +1015,14 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         inset: -10% 0 0;
         pointer-events: none;
         position: absolute;
+      }
+
+      .capture {
+        height: 1px;
+        opacity: 0;
+        pointer-events: none;
+        position: absolute;
+        width: 1px;
       }
 
       .echo {
