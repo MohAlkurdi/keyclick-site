@@ -81,8 +81,15 @@ const waveRows = [...mainRows, bottomRow];
     />
     <meta property="og:title" content="KeyClick: your MacBook keyboard, now mechanical" />
     <meta property="og:description" content="Free and open source. Every key has its own recording." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={new URL(base, Astro.site).href} />
+    <meta property="og:image" content={new URL(`${base}og.png`, Astro.site).href} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta name="theme-color" content="#0a0a0b" />
     <link rel="icon" type="image/svg+xml" href={`${base}favicon.svg`} />
+    <link rel="apple-touch-icon" href={`${base}apple-touch-icon.png`} />
   </head>
   <body style={`--stem: ${stems[packs[0].slug]}`}>
     <header class="nav wrap">
@@ -270,7 +277,7 @@ const waveRows = [...mainRows, bottomRow];
       <section class="menubar-sec wrap" aria-labelledby="menu-title">
         <div class="section-head">
           <h2 id="menu-title">Lives in your menu bar.</h2>
-          <p>No window and no Dock icon. One click turns it off for a call, changes the volume, or picks a switch. This panel works.</p>
+          <p>No window and no Dock icon. One click, or ⌃⌥K from any app, turns it off for a call. It changes the volume, picks a switch and updates itself. This panel works.</p>
         </div>
         <div class="desk">
           <div class="menubar">
@@ -280,7 +287,7 @@ const waveRows = [...mainRows, bottomRow];
           </div>
           <div class="popover">
             <div class="pop-row">
-              <span id="menu-sound-label">Sound</span>
+              <span id="menu-sound-label">Sound <span class="pop-key">⌃⌥K</span></span>
               <button class="mac-switch" id="menu-sound" role="switch" aria-checked="true" aria-labelledby="menu-sound-label"></button>
             </div>
             <div class="pop-row pop-stack">
@@ -293,6 +300,7 @@ const waveRows = [...mainRows, bottomRow];
             </div>
             <div class="pop-row" inert><span>Open at login</span><span class="mac-switch" aria-hidden="true"></span></div>
             <hr />
+            <div class="pop-row" inert><span>Check for Updates…</span></div>
             <div class="pop-row" inert><span>Quit KeyClick</span></div>
           </div>
         </div>
@@ -303,8 +311,8 @@ const waveRows = [...mainRows, bottomRow];
         <div class="proof">
           <ul class="claims">
             <li><strong>Listen-only.</strong> It notices which key moved, to play that key's sound. It cannot change or block anything you type.</li>
-            <li><strong>Nothing leaves your Mac.</strong> No network code, no logs, no history. macOS hides password fields from it.</li>
-            <li><strong>Small enough to read.</strong> The whole app is about 200 lines of Swift. <a href={source}>Read the part that listens</a>.</li>
+            <li><strong>Your typing stays on your Mac.</strong> No logs, no history, nothing sent. The only network request is a daily check for updates. macOS hides password fields from it.</li>
+            <li><strong>Small enough to read.</strong> The whole app is about 220 lines of Swift. <a href={source}>Read the part that listens</a>.</li>
           </ul>
           <figure class="code">
             <figcaption>Sources/KeyClick/Clicker.swift</figcaption>
@@ -335,8 +343,8 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         <details class="manual">
           <summary>Or install it yourself</summary>
           <ol class="steps">
-            <li><a href={download}>Download KeyClick.zip</a>, unzip it and move KeyClick to Applications.</li>
-            <li>First launch is blocked: open System Settings → Privacy &amp; Security and click Open Anyway.</li>
+            <li>Run <code>brew install --cask mohalkurdi/tap/keyclick</code>, or <a href={download}>download KeyClick.zip</a>, unzip it and move KeyClick to Applications.</li>
+            <li>Downloaded by hand? The first launch is blocked: open System Settings → Privacy &amp; Security and click Open Anyway.</li>
             <li>Allow it in System Settings, Privacy &amp; Security, Input Monitoring.</li>
           </ol>
         </details>
@@ -1752,6 +1760,11 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         gap: 6px;
       }
 
+      .pop-key {
+        color: rgb(235 235 245 / 0.45);
+        margin-left: 0.3em;
+      }
+
       .pop-row[inert] {
         color: #cfcfd3;
       }
@@ -2007,6 +2020,12 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
 
       .manual summary:hover {
         color: var(--text);
+      }
+
+      .manual code {
+        color: var(--text);
+        font-family: ui-monospace, "SF Mono", Menlo, monospace;
+        font-size: 0.875em;
       }
 
       .manual .steps {

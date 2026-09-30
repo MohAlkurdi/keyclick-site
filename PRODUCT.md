@@ -20,7 +20,7 @@ KeyClick is a macOS menu bar app that plays a real mechanical switch recording o
 
 ## Positioning
 
-Free and open source (MIT), native Swift with no dependencies, around 200 lines anyone can read. Listen-only: it never reads which character was typed, stores nothing, and has no network code. Competing apps are paid (Klack) or built on Electron (Mechvibes).
+Free and open source (MIT), native Swift with no dependencies, around 200 lines anyone can read. Listen-only: it never reads which character was typed, stores nothing, and its only network request is a daily update check. Competing apps are paid (Klack) or built on Electron (Mechvibes).
 
 ## Operating Context
 

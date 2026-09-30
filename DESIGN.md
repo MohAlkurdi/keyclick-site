@@ -318,7 +318,7 @@ Brand (22px favicon + "KeyClick", 650, −0.02em) left; links at 0.9375rem in As
 A source-file replica: Deck Bottom fill, 1px Hairline border, 12px radius, file path caption in monospace above a Hairline rule. The one line that proves the claim is marked with a 22% stem wash and 2px stem ring.
 
 ### Menu Bar Scene
-A desk-screen panel (Desk Surface with a top-right 7% light, 14px radius) with a 30px translucent menu bar and a working glass popover (Sound switch, volume range with stem accent, switch select, inert "Open at login" and "Quit" rows in #cfcfd3).
+A desk-screen panel (Desk Surface with a top-right 7% light, 14px radius) with a 30px translucent menu bar and a working glass popover (Sound switch, volume range with stem accent, switch select, inert "Open at login", "Check for Updates…" and "Quit" rows in #cfcfd3; the Sound label carries its ⌃⌥K shortcut at 45% white).
 
 ## Do's and Don'ts
 
