@@ -91,6 +91,7 @@ const waveRows = [...mainRows, bottomRow];
         KeyClick
       </a>
       <nav aria-label="Main">
+        <a href="#test">Type test</a>
         <a href="#sounds">Sounds</a>
         <a href="#privacy">Privacy</a>
         <a href={repo}>GitHub</a>
@@ -195,6 +196,49 @@ const waveRows = [...mainRows, bottomRow];
             </div>
           </div>
         </div>
+      </section>
+
+      <section class="test wrap" id="test" aria-labelledby="test-title">
+        <div class="test-head">
+          <div class="section-head">
+            <h2 id="test-title">Take it for a type test.</h2>
+            <p>Words per minute, with every keystroke on <span id="test-pack">{packs[0].name}</span>.</p>
+          </div>
+          <div class="modes" aria-label="Test length">
+            {
+              [15, 30, 60].map((s) => (
+                <button class="mode" type="button" aria-pressed={s === 30 ? "true" : "false"} data-seconds={s}>
+                  {s}s
+                </button>
+              ))
+            }
+          </div>
+        </div>
+        <div class="test-box" id="test-box">
+          <p class="test-time" id="test-time" aria-hidden="true">30</p>
+          <div class="words" id="words" aria-hidden="true"><div class="words-inner" id="words-inner"></div></div>
+          <input
+            class="test-input"
+            id="test-input"
+            aria-label="Type the words shown"
+            autocomplete="off"
+            autocapitalize="off"
+            autocorrect="off"
+            spellcheck="false"
+          />
+          <p class="test-focus">Click here, then start typing</p>
+          <div class="test-result" id="test-result" aria-live="polite" hidden>
+            <dl>
+              <div class="stat big"><dt>wpm</dt><dd id="r-wpm"></dd></div>
+              <div class="stat big"><dt>accuracy</dt><dd id="r-acc"></dd></div>
+              <div class="stat"><dt>raw</dt><dd id="r-raw"></dd></div>
+              <div class="stat"><dt>correct / wrong / extra / missed</dt><dd id="r-chars"></dd></div>
+              <div class="stat"><dt>switch</dt><dd id="r-switch"></dd></div>
+            </dl>
+            <button class="btn" type="button" id="test-again">Next test</button>
+          </div>
+        </div>
+        <p class="test-hint"><kbd>tab</kbd> or <kbd>esc</kbd> starts over</p>
       </section>
 
       <section class="voices wrap" id="sounds" aria-labelledby="voices-title">
@@ -387,12 +431,15 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         src.start(0, slot[0], slot[1]);
       }
 
+      const held = new Set<string>();
       function press(code: string) {
+        held.add(code);
         keyEls.get(code)?.classList.add("down");
         tiles.get(code)?.classList.add("hit");
         play("press", code);
       }
       function release(code: string) {
+        held.delete(code);
         keyEls.get(code)?.classList.remove("down");
         const tile = tiles.get(code);
         if (tile) setTimeout(() => tile.classList.remove("hit"), 140);
@@ -420,13 +467,30 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
 
       // Keys that would scroll or search the page instead of typing.
       const pageKeys = new Set(["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight", "Slash", "Quote", "Backspace"]);
+      function tap(code: string) {
+        press(code);
+        setTimeout(() => release(code), 110);
+      }
+      // macOS browsers send caps lock as a toggle: keydown when it turns on, keyup when it turns off.
+      const capsToggles = /Mac|iPhone|iPad/.test(navigator.platform);
+      const typing = (e: Event) => e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement;
       addEventListener("keydown", (e) => {
         if (e.target === document.body && pageKeys.has(e.code) && !e.metaKey && !e.ctrlKey) e.preventDefault();
+        if ((e.metaKey || e.ctrlKey) && e.code === "KeyA" && !typing(e)) e.preventDefault();
         if (e.repeat) return;
+        if (e.code === "CapsLock") return tap(e.code);
         press(e.code);
-        if (!e.metaKey && !e.ctrlKey) echoKey(e.key);
+        if (!e.metaKey && !e.ctrlKey && !typing(e)) echoKey(e.key);
       });
-      addEventListener("keyup", (e) => release(e.code));
+      addEventListener("keyup", (e) => {
+        if (e.code === "CapsLock") return capsToggles && tap(e.code);
+        release(e.code);
+        // macOS sends no keyup for keys pressed while command is held.
+        if (e.key === "Meta") for (const code of held) release(code);
+      });
+      addEventListener("blur", () => {
+        for (const code of held) release(code);
+      });
 
       // Touch and mouse: every key on the drawing, and every waveform, can be pressed.
       for (const [code, el] of [...keyEls, ...tiles]) {
@@ -489,6 +553,7 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         }
         menuPack.value = p.slug;
         $("voices-pack").textContent = p.name;
+        $("test-pack").textContent = p.name;
         load(p).then((buffer) => pack === p && drawWaves(p, buffer));
       }
 
@@ -542,7 +607,193 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         setTimeout(() => (copyLabel.textContent = "Copy prompt"), 1600);
       });
 
+      // Type test: Monkeytype-style timed run over common words.
+      const WORDS = (
+        "the be of and a to in he have it that for they with as not on she at by this we you do but from or which one " +
+        "would all will there say who make when can more if no man out other so what time up go about than into could " +
+        "state only new year some take come these know see use get like then first any work now may such give over " +
+        "think most even find day also after way many must look before great back through long where much should well " +
+        "people down own just because good each those feel seem how high too place little world very still nation hand " +
+        "old life tell write become here show house both between need mean call develop under last right move thing " +
+        "general school never same another begin while number part turn real leave might want point form off child few " +
+        "small since against ask late home interest large person end open public follow during present without again " +
+        "hold around possible head consider word program problem however lead system set order eye plan run keep face " +
+        "fact group play stand increase early course change help line"
+      ).split(" ");
+      const testBox = $("test-box");
+      const wordsBox = $("words");
+      const inner = $("words-inner");
+      const input = $<HTMLInputElement>("test-input");
+      const timeEl = $("test-time");
+      const result = $("test-result");
+      const caret = document.createElement("span");
+      caret.className = "test-caret";
+      const modes = [...document.querySelectorAll<HTMLButtonElement>(".mode")];
+      let seconds = 30;
+      let words: string[] = [];
+      let entered: string[] = [];
+      let wordEls: HTMLElement[] = [];
+      let wi = 0;
+      let startedAt = 0;
+      let timer = 0;
+      let keystrokes = 0;
+      let rightKeystrokes = 0;
+
+      function addWords(n: number) {
+        for (let i = 0; i < n; i++) {
+          let w;
+          do w = WORDS[Math.floor(Math.random() * WORDS.length)];
+          while (w === words[words.length - 1]);
+          words.push(w);
+          const el = document.createElement("span");
+          el.className = "word";
+          wordEls.push(el);
+          inner.append(el);
+          renderWord(words.length - 1);
+        }
+      }
+
+      function renderWord(i: number) {
+        const w = words[i];
+        const t = entered[i] ?? "";
+        const letters = [];
+        for (let j = 0; j < Math.max(w.length, t.length); j++) {
+          const letter = document.createElement("span");
+          letter.textContent = j < w.length ? w[j] : t[j];
+          if (j >= w.length) letter.className = "extra";
+          else if (j < t.length) letter.className = t[j] === w[j] ? "ok" : "bad";
+          letters.push(letter);
+        }
+        wordEls[i].replaceChildren(...letters);
+        wordEls[i].classList.toggle("err", i < wi && t !== w);
+      }
+
+      function placeCaret() {
+        const el = wordEls[wi];
+        const n = (entered[wi] ?? "").length;
+        const letter = el.children[Math.min(n, el.children.length - 1)] as HTMLElement;
+        const left = n < el.children.length ? letter.offsetLeft : letter.offsetLeft + letter.offsetWidth;
+        caret.style.transform = `translate(${left}px, ${el.offsetTop}px)`;
+        // Keep the current line second of three once the first line is done.
+        const line = el.offsetHeight;
+        inner.style.transform = `translateY(${-Math.max(0, Math.round(el.offsetTop / line) - 1) * line}px)`;
+      }
+
+      function reset() {
+        clearInterval(timer);
+        startedAt = 0;
+        words = [];
+        entered = [""];
+        wordEls = [];
+        wi = 0;
+        keystrokes = rightKeystrokes = 0;
+        inner.replaceChildren(caret);
+        inner.style.transform = "";
+        addWords(60);
+        timeEl.textContent = String(seconds);
+        testBox.classList.remove("running", "done");
+        result.hidden = true;
+        input.hidden = false;
+        placeCaret();
+      }
+
+      function finish() {
+        clearInterval(timer);
+        const minutes = seconds / 60;
+        let right = 0, wrong = 0, extra = 0, missed = 0, raw = 0, counted = 0;
+        for (let i = 0; i <= wi; i++) {
+          const w = words[i];
+          const t = entered[i] ?? "";
+          const done = i < wi;
+          for (let j = 0; j < Math.max(w.length, t.length); j++) {
+            if (j >= t.length) missed += done ? 1 : 0;
+            else if (j >= w.length) extra++;
+            else if (t[j] === w[j]) right++;
+            else wrong++;
+          }
+          raw += t.length + (done ? 1 : 0);
+          // WPM counts only words entered right, plus their spaces; the unfinished last word counts if right so far.
+          if (done ? t === w : w.startsWith(t)) counted += t.length + (done ? 1 : 0);
+        }
+        $("r-wpm").textContent = String(Math.round(counted / 5 / minutes));
+        $("r-acc").textContent = `${keystrokes ? Math.round((rightKeystrokes / keystrokes) * 100) : 0}%`;
+        $("r-raw").textContent = String(Math.round(raw / 5 / minutes));
+        $("r-chars").textContent = `${right} / ${wrong} / ${extra} / ${missed}`;
+        $("r-switch").textContent = pack.name;
+        testBox.classList.remove("running");
+        testBox.classList.add("done");
+        input.hidden = true;
+        result.hidden = false;
+        $("test-again").focus();
+      }
+
+      function type(ch: string) {
+        if (!startedAt) {
+          startedAt = performance.now();
+          testBox.classList.add("running");
+          timer = window.setInterval(() => {
+            const left = seconds - (performance.now() - startedAt) / 1000;
+            timeEl.textContent = String(Math.max(0, Math.ceil(left)));
+            if (left <= 0) finish();
+          }, 100);
+        }
+        const w = words[wi];
+        const t = entered[wi];
+        keystrokes++;
+        if (ch === " ") {
+          if (!t) return keystrokes--;
+          if (t === w) rightKeystrokes++;
+          wi++;
+          entered[wi] = "";
+          renderWord(wi - 1);
+          if (words.length - wi < 30) addWords(30);
+          return;
+        }
+        if (w[t.length] === ch) rightKeystrokes++;
+        if (t.length < w.length + 8) entered[wi] = t + ch;
+        renderWord(wi);
+      }
+
+      function back(wholeWord: boolean) {
+        if (!entered[wi] && wi > 0 && entered[wi - 1] !== words[wi - 1]) {
+          wi--;
+          renderWord(wi + 1);
+          if (!wholeWord) return renderWord(wi);
+        }
+        entered[wi] = wholeWord ? "" : entered[wi].slice(0, -1);
+        renderWord(wi);
+      }
+
+      input.addEventListener("beforeinput", (e) => {
+        e.preventDefault();
+        if (testBox.classList.contains("done")) return;
+        if (e.inputType === "insertText" && e.data) for (const ch of e.data) type(ch);
+        else if (e.inputType === "deleteContentBackward") back(false);
+        else if (e.inputType.startsWith("delete")) back(true);
+        placeCaret();
+      });
+      testBox.addEventListener("keydown", (e) => {
+        if (e.key !== "Tab" && e.key !== "Escape") return;
+        e.preventDefault();
+        reset();
+        input.focus();
+      });
+      $("test-again").addEventListener("click", () => {
+        reset();
+        input.focus();
+      });
+      for (const m of modes) {
+        m.addEventListener("click", () => {
+          seconds = Number(m.dataset.seconds);
+          for (const o of modes) o.setAttribute("aria-pressed", String(o === m));
+          reset();
+          input.focus();
+        });
+      }
+      new ResizeObserver(placeCaret).observe(wordsBox);
+
       select(pack);
+      reset();
       new ResizeObserver(measurePans).observe(kb);
       // Phones scroll the keyboard sideways; start with G and H in the middle.
       const frame = kb.parentElement!;
@@ -1132,6 +1383,204 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
         font-size: 1.125rem;
       }
 
+      /* Type test */
+      .test {
+        border-top: 1px solid var(--line);
+        display: grid;
+        gap: clamp(2rem, 4vw, 3rem);
+        padding-block: clamp(4rem, 9vw, 7.5rem);
+      }
+
+      #test-pack {
+        color: var(--text);
+      }
+
+      .test-head {
+        align-items: end;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        justify-content: space-between;
+      }
+
+      .modes {
+        display: flex;
+        gap: 0.25rem;
+      }
+
+      .mode {
+        background: none;
+        border: 1px solid transparent;
+        border-radius: 8px;
+        color: var(--muted);
+        cursor: pointer;
+        font: inherit;
+        font-size: 0.9375rem;
+        font-variant-numeric: tabular-nums;
+        min-height: 2.5rem;
+        min-width: 3.5rem;
+      }
+
+      .mode:hover {
+        color: var(--text);
+      }
+
+      .mode[aria-pressed="true"] {
+        border-color: var(--line);
+        color: var(--text);
+      }
+
+      .test-box {
+        font-size: clamp(1.375rem, 2.6vw, 2rem);
+        font-weight: 480;
+        letter-spacing: -0.01em;
+        min-height: calc(1.6em * 3 + 2.5rem);
+        position: relative;
+      }
+
+      .test-time {
+        color: var(--stem);
+        font-size: 1.25rem;
+        font-variant-numeric: tabular-nums;
+        font-weight: 620;
+        margin: 0 0 0.75rem;
+        transition: color 300ms;
+      }
+
+      .words {
+        height: calc(1.6em * 3);
+        line-height: 1.6;
+        overflow: hidden;
+      }
+
+      .words-inner {
+        position: relative;
+        transition: transform 180ms var(--ease);
+      }
+
+      .word {
+        color: #6f6f74;
+        display: inline-block;
+        margin-right: 0.55em;
+      }
+
+      .word .ok {
+        color: var(--text);
+      }
+
+      .word .bad {
+        color: #ff6b61;
+      }
+
+      .word .extra {
+        color: #a8453d;
+      }
+
+      .word.err {
+        text-decoration: underline 2px #ff6b61;
+        text-underline-offset: 0.3em;
+      }
+
+      .test-caret {
+        animation: blink 1.1s steps(1) infinite;
+        background: var(--stem);
+        border-radius: 1px;
+        height: 1.1em;
+        left: -1px;
+        position: absolute;
+        top: 0.25em;
+        transition:
+          transform 90ms,
+          background 300ms;
+        width: 2px;
+      }
+
+      .running .test-caret {
+        animation: none;
+      }
+
+      .test-input {
+        cursor: text;
+        font-size: 16px;
+        height: 100%;
+        inset: 0;
+        opacity: 0;
+        position: absolute;
+        width: 100%;
+      }
+
+      .test-focus {
+        color: var(--text);
+        display: grid;
+        font-size: 1rem;
+        inset: 0;
+        margin: 0;
+        place-items: center;
+        pointer-events: none;
+        position: absolute;
+      }
+
+      .test-box:not(:focus-within):not(.done) :is(.words, .test-time) {
+        filter: blur(6px);
+        opacity: 0.4;
+      }
+
+      .test-box:focus-within .test-focus,
+      .test-box.done .test-focus,
+      .test-box:not(:focus-within) .test-caret {
+        display: none;
+      }
+
+      .test-box.done :is(.words, .test-time) {
+        display: none;
+      }
+
+      .test-result:not([hidden]) {
+        display: grid;
+        gap: 2rem;
+        justify-items: start;
+      }
+
+      .test-result dl {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem 3rem;
+        margin: 0;
+      }
+
+      .stat dt {
+        color: var(--muted);
+        font-size: 0.875rem;
+      }
+
+      .stat dd {
+        font-size: 1.5rem;
+        font-variant-numeric: tabular-nums;
+        margin: 0.25rem 0 0;
+      }
+
+      .stat.big dd {
+        color: var(--stem);
+        font-size: clamp(3rem, 7vw, 4.5rem);
+        font-weight: 620;
+        letter-spacing: -0.03em;
+        line-height: 1;
+      }
+
+      .test-hint {
+        color: #7c7c81;
+        font-size: 0.875rem;
+        margin: 0;
+      }
+
+      .test-hint kbd {
+        border: 1px solid var(--line);
+        border-radius: 5px;
+        color: var(--muted);
+        font: inherit;
+        padding: 0.1rem 0.4rem;
+      }
+
       .voices {
         border-top: 1px solid var(--line);
         display: grid;
@@ -1668,7 +2117,8 @@ tap = <span class="c-t">CGEvent</span>.tapCreate(
           transition-delay: 0ms !important;
         }
 
-        .caret {
+        .caret,
+        .test-caret {
           animation: none;
         }
       }

@@ -182,7 +182,7 @@ Motion is mechanical, not decorative. On load the flat MacBook keys rise into ke
 **Key Characteristics:**
 - Graphite ground, near-neutral greys with a faint cool cast, warm white text.
 - One hue at a time, owned by the selected switch (`--stem`).
-- The keyboard is the signature component and reappears as the waveform map and the final Download keycap.
+- The keyboard is the signature component and reappears as the waveform map and the final Copy prompt keycap.
 - Hanken Grotesk throughout, tight and medium-heavy for headlines.
 - Hairline section rules, no cards; bordered panels only when they depict a real object (a screen, a source file).
 - Physical motion on one easing curve, fully disabled under reduced motion.
@@ -205,14 +205,14 @@ A near-monochrome graphite palette whose single accent is swapped in by the chos
 - **Ash** (secondary text: lede, section support copy, nav links, unselected chips, tile labels). **Dim Ash** (fine print and footer).
 - **Wave Idle** (waveform strokes at rest). **Switch Track** (Off state of the power switch).
 - **Hairline** (every divider and panel border). **Popover Glass** (the macOS menu replica, with a 24px blur).
-- **Ivory Face / Ivory Base** (only the final Download keycap: a light keycap on a grey skirt).
+- **Ivory Face / Ivory Base** (only the final Copy prompt keycap: a light keycap on a grey skirt).
 
 ### Named Rules
 **The Stem Is the Only Colour Rule.** Chroma on the page comes from `--stem` and nowhere else. If a new element needs emphasis, it gets Warm White, weight, or the stem colour; never a second accent. The one scoped exception is syntax highlighting inside the source-file replica (#ff7ab2 keywords, #7fd5ea types, #d9c97c numbers), which depicts Xcode, not the brand.
 
 **The One Switch Rule.** Selecting a switch rewrites `--stem` on `body`; every stem-coloured element changes together. Never hard-code a stem hex on an element that should follow the selection.
 
-**The White Is the Action Rule.** Download is Warm White on Graphite (or the Ivory keycap). The stem colour marks state and feedback, never the call to action.
+**The White Is the Action Rule.** Install is Warm White on Graphite (or the Ivory keycap). The stem colour marks state and feedback, never the call to action.
 
 ## Typography
 
@@ -225,7 +225,7 @@ A near-monochrome graphite palette whose single accent is swapped in by the chos
 ### Hierarchy
 - **Display** (620, clamp 2.4–3.75rem capped by viewport height, 1.04, −0.032em): the two-line hero headline only, balanced, centred.
 - **Headline** (620, clamp 2–3.2rem, 1.04, −0.032em): section titles, short declarative sentences ending in a full stop.
-- **Headline Closing** (620, clamp 2.75–5rem): the final "Get KeyClick." above the Download keycap.
+- **Headline Closing** (620, clamp 2.75–5rem): the final "Get KeyClick." above the Copy prompt keycap.
 - **Echo** (480, clamp 1.125–1.5rem, −0.01em): the live line of what the visitor types, Warm White; its hint state is Ash.
 - **Lead** (400, 1.125rem, 1.55): section support copy and privacy claims in Ash, with bold lead-ins (600) in Warm White. Hero lede is fluid 1.0625–1.2rem, max 36em.
 - **Body** (400, 1.0625rem, 1.55): base size.
@@ -243,13 +243,13 @@ A near-monochrome graphite palette whose single accent is swapped in by the chos
 
 A single centred column (`max-width: 72rem`, fluid gutter clamp 1.25–2.5rem) of full-width bands, each separated by a 1px Hairline top rule and padded clamp 4–7.5rem (the closing band clamp 5–9rem).
 
-The first viewport is fixed in shape: minimal nav, a centred headline + lede + Download + requirements, the echo line, the keyboard, then the On/Off switch and the five stems. The hero copy and keyboard are sized against viewport height (`min(5vw, 6.4vh)` headline, keyboard `max-width: min(60rem, 92vh)`) so the whole instrument fits above the fold on a laptop.
+The first viewport is fixed in shape: minimal nav, a centred headline + lede + Install + requirements, the echo line, the keyboard, then the On/Off switch and the five stems. The hero copy and keyboard are sized against viewport height (`min(5vw, 6.4vh)` headline, keyboard `max-width: min(60rem, 92vh)`) so the whole instrument fits above the fold on a laptop. The type test is the first band after it.
 
 **The keyboard unit.** Every key is measured in `--u = 100cqi / 15.4` (the keyboard frame is a size container), with gaps of `0.1u` and each key's width as a flex ratio `--w` (esc 1.5, caps lock 1.8, shift 2.3/2.2, command 1.3, space 5.1). The F-row is 0.56u tall; arrows form a half-height inverted T in a 3u slot. The waveform map reuses the same rows and `--w` values with a 6px gap, so it reads as the keyboard seen as sound.
 
 Below the fold, sections alternate between a text-over-content stack (sounds) and a two-column split (menu bar: 1fr / 1.1fr; privacy: 0.9fr / 1.1fr).
 
-**Responsive.** At ≤880px both two-column splits stack. At ≤640px: nav keeps only the Download button; the F-row is hidden; the keyboard switches to a fixed `--u: 42px`, scrolls sideways with a hidden scrollbar and opens centred on H; tilt drops from 22° to 14°; stems become a five-column grid with names only; waveform tiles drop their labels and shrink to 30px; the popover centres under a centred menu bar icon.
+**Responsive.** At ≤880px both two-column splits stack. At ≤640px: nav keeps only the Install button; the F-row is hidden; the keyboard switches to a fixed `--u: 42px`, scrolls sideways with a hidden scrollbar and opens centred on H; tilt drops from 22° to 14°; stems become a five-column grid with names only; waveform tiles drop their labels and shrink to 30px; the popover centres under a centred menu bar icon.
 
 ### Named Rules
 **The Keyboard Unit Rule.** Anything keyboard-shaped is sized in `--u` and `--w`, never in fixed pixels, so the keyboard, its legends, radii and glow scale together.
@@ -281,7 +281,7 @@ Soft, object-true corners. Keyboard radii scale with the unit: deck 0.32u, keyca
 Solid, quiet, white.
 - **Shape:** gently rounded (10px).
 - **Primary:** Warm White on Graphite text, weight 650, min-height 2.9rem, 1.25rem inline padding, optional 16px stroked icon at 1.6 stroke.
-- **Small:** 0.875rem, min-height 2.25rem, 0.9rem padding (nav Download).
+- **Small:** 0.875rem, min-height 2.25rem, 0.9rem padding (nav Install).
 - **Hover / Active:** background to Pure White (160ms); active nudges down 1px on the shared easing.
 - **Focus:** 2px Warm White outline, 3px offset, 4px radius (global).
 
@@ -292,8 +292,11 @@ The page's core object: a dark base with a face on top, legend grid inside.
 - **Pressed:** face sinks to 0.15 × lift in 40ms with a 45% stem inner ring; the underglow snaps on at 95% and fades over 600ms after release.
 - **Touch ID key:** a blank cap with a 1px 12% white ring, not pressable.
 
-### Download Keycap
-The final call to action is the same keycap, inverted: Ivory face on an Ivory Base skirt, lift 12px, 92px tall, up to 22rem wide, label 1.375rem/600 with a 0.8125rem sub-line. Hover raises it to 0.8 × lift; press sinks it and plays the Enter recording.
+### Copy Prompt Keycap
+The final call to action is the same keycap, inverted: Ivory face on an Ivory Base skirt, lift 12px, 92px tall, up to 22rem wide, label 1.375rem/600 with a 0.8125rem sub-line. It copies the agent install prompt shown above it and reads "Copied" for 1.6s. Hover raises it to 0.8 × lift; press sinks it and plays the Enter recording. Manual install sits below in a closed disclosure.
+
+### Type Test
+A timed run (15/30/60s) over common words, in the body grotesk, never a mono face. Untyped words #6f6f74, typed-right Warm White, wrong letters #ff6b61, extra letters #a8453d, a committed wrong word underlined 2px in #ff6b61. The caret and countdown take `--stem`. Three lines are visible; once the first is done, the text scrolls a line at a time. Unfocused, the words blur behind "Click here, then start typing". Results replace the words: wpm and accuracy large in `--stem`, then raw, character counts and the switch used. Tab or Esc starts over.
 
 ### Stem Selector
 A radio group of five chips.
@@ -309,7 +312,7 @@ A labelled toggle: 42 × 24px pill, Switch Track when off, `--stem` when on, 20p
 One per key, laid out as the keyboard. A 1px Hairline top rule, an 11px Ash label, and a 24-bar peak waveform in Wave Idle at 1.2px non-scaling stroke. On hit, rule and waveform snap to `--stem` and fade back over 500ms. Tiles are pressable and play their key.
 
 ### Navigation
-Brand (22px favicon + "KeyClick", 650, −0.02em) left; links at 0.9375rem in Ash, Warm White on hover (160ms), 1.75rem apart, ending in the small Download button. Mobile keeps only the button.
+Brand (22px favicon + "KeyClick", 650, −0.02em) left; links at 0.9375rem in Ash, Warm White on hover (160ms), 1.75rem apart, ending in the small Install button. Mobile keeps only the button.
 
 ### Code Panel
 A source-file replica: Deck Bottom fill, 1px Hairline border, 12px radius, file path caption in monospace above a Hairline rule. The one line that proves the claim is marked with a 22% stem wash and 2px stem ring.
@@ -324,7 +327,7 @@ A desk-screen panel (Desk Surface with a top-right 7% light, 14px radius) with a
 - **Do** size anything keyboard-shaped in `--u` and `--w`, with `0.1u` gaps.
 - **Do** use the shared easing `cubic-bezier(0.16, 1, 0.3, 1)` for physical motion: fast attack (0–40ms) on press, slow decay (500–600ms) on release.
 - **Do** separate bands with a 1px Hairline top rule and clamp 4–7.5rem padding.
-- **Do** keep Download Warm White (or the Ivory keycap) with Graphite text.
+- **Do** keep Install Warm White (or the Ivory keycap) with Graphite text.
 - **Do** zero every transition and stop the caret under `prefers-reduced-motion`, landing directly in the mechanical state.
 
 ### Don't:
